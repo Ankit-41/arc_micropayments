@@ -1,0 +1,47 @@
+version: "3.9"
+services:
+  mongo:
+    image: mongo:6
+    container_name: arc_mongo
+    restart: always
+    ports: ["27017:27017"]
+    volumes:
+      - mongo_data:/data/db
+
+  server:
+    build: ./server
+    container_name: arc_server
+    environment:
+      - PORT=4000
+      - MONGO_URI=mongodb://mongo:27017/arc_micropayments
+      - JWT_SECRET=dev_secret_change_me
+      - ORIGIN=http://localhost:5173
+      - AGENTS_BASE_URL=http://agents:8000
+      - RPC_URL=https://rpc.testnet.arc.network
+      - VAULT_ADDRESS=
+      - PRIVATE_KEY=
+      - PLATFORM_FEE_BPS=250
+    depends_on: [mongo, agents]
+    ports: ["4000:4000"]
+
+  agents:
+    build: ./agents
+    container_name: arc_agents
+    environment:
+      - PORT=8000
+      - SERVER_BASE_URL=http://server:4000
+    ports: ["8000:8000"]
+
+  client:
+    build: ./client
+    container_name: arc_client
+    environment:
+      - VITE_API_URL=http://localhost:4000
+      - VITE_ARC_RPC=https://rpc.testnet.arc.network
+      - VITE_USDC_ADDRESS=
+      - VITE_VAULT_ADDRESS=
+    depends_on: [server]
+    ports: ["5173:5173"]
+
+volumes:
+  mongo_data:

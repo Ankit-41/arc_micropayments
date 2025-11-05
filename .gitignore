@@ -1,0 +1,122 @@
+# ==========================================
+# Core Git Ignore for Arc Micropayments MVP
+# ==========================================
+
+# -------------------------
+# Node.js (server & client)
+# -------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+.env
+.env.local
+.env.*.local
+dist/
+build/
+coverage/
+.cache/
+.temp/
+
+# -------------------------
+# Foundry / Solidity
+# -------------------------
+foundry/cache/
+broadcast/
+lib/
+*.dbg.json
+*.bin
+*.abi
+*.json
+*.sol.json
+!client/src/lib/
+
+# If you're exporting contract ABIs for frontend, keep only the /contracts/ folder:
+# !client/src/contracts/
+
+# -------------------------
+# IDE / Editors
+# -------------------------
+.vscode/
+.idea/
+*.iml
+*.sublime-workspace
+*.sublime-project
+
+# -------------------------
+# OS / System Files
+# -------------------------
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# -------------------------
+# Logs
+# -------------------------
+logs/
+*.log
+*.log.*
+*.err
+
+# -------------------------
+# Temporary / Misc
+# -------------------------
+*.swp
+*.swo
+*.tmp
+*.bak
+*.zip
+*.tar
+*.gz
+*.tgz
+*.rar
+
+# -------------------------
+# Python (if used for analysis scripts)
+# -------------------------
+__pycache__/
+*.py[cod]
+
+# -------------------------
+# Frontend build (React/Vite)
+# -------------------------
+client/node_modules/
+client/.vite/
+client/dist/
+client/.parcel-cache/
+client/.next/
+client/out/
+client/build/
+
+# -------------------------
+# Local database / dev data
+# -------------------------
+server/data/
+server/tmp/
+server/uploads/
+server/db.sqlite
+server/db.sqlite3
+
+# -------------------------
+# Logs & runtime for server
+# -------------------------
+server/logs/
+server/debug.log
+
+# -------------------------
+# Generated artifacts
+# -------------------------
+*.tsbuildinfo
+*.pid
+*.seed
+*.seed.json
+
+# -------------------------
+# Misc security
+# -------------------------
+*.pem
+*.key
+*.crt
+*.p12
