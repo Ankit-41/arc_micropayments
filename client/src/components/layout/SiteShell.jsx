@@ -4,6 +4,7 @@ import AppHeader from './AppHeader.jsx'
 import UsageSummary from '../common/UsageSummary.jsx'
 import useUsageSummary from '../../hooks/useUsageSummary.js'
 import { SidebarProvider } from '../../context/SidebarContext.jsx'
+import WalletVoiceButton from '../common/WalletVoiceButton.jsx'
 
 export default function SiteShell({ children }){
   const { summary } = useUsageSummary()
@@ -16,9 +17,10 @@ export default function SiteShell({ children }){
         <AppHeader />
         <main className="mx-auto flex w-full max-w-6xl gap-6 px-4 py-6">
           <div className="min-w-0 flex-1">{children}</div>
-          <aside className="sticky top-[68px] hidden w-80 shrink-0 self-start lg:block">
+          <aside className="sticky top-[56px] hidden w-80 shrink-0 self-start lg:block">
             <div className="space-y-16">
               <UsageSummary summary={summary} />
+              <WalletVoiceButton />
               {sidebarContent}
             </div>
           </aside>

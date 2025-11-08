@@ -104,11 +104,20 @@ export default function CreatorPage(){
   return (
     <RequireAuth>
       <section className="flex flex-col gap-6">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
-          <h1 className="text-3xl font-semibold text-white">Creator studio</h1>
-          <p className="mt-2 text-sm text-slate-400">
-            Share your expertise. Pricing is negotiated automatically when readers open your posts.
-          </p>
+        <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-slate-950/90 p-5 backdrop-blur-sm">
+          <div className="flex items-start gap-3">
+            <div className="rounded-lg bg-purple-500/10 p-2">
+              <svg className="h-5 w-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h1 className="text-2xl font-semibold text-white mb-1.5">Creator studio</h1>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Share your expertise. Pricing is negotiated automatically when readers open your posts.
+              </p>
+            </div>
+          </div>
         </div>
         <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6">
           <CreatorForm />

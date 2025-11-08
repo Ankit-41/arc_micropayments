@@ -4,6 +4,7 @@ import morgan from 'morgan'
 import axios from 'axios'
 import { handleTipRequest } from './tipAgent.js'
 import { handleNegotiation } from './negotiationAgent.js'
+import { handleOrchestrator } from './orchestratorAgent.js'
 import { handleWalletRequest } from './walletAgent.js'
 
 const app = express()
@@ -68,6 +69,24 @@ app.post('/tip/process', async (req, res)=>{
   } catch (error){
     console.error('Tip endpoint error:', error)
     res.status(500).json({ error: error.message || 'Tip processing failed' })
+  }
+})
+
+// Orchestrator (tip/approve/deposit intent)
+app.post('/orchestrator/process', async (req, res)=>{
+  try {
+    const { userInput, inputType } = req.body
+    if(!userInput){
+      return res.status(400).json({ error: 'Missing userInput' })
+    }
+    const result = await handleOrchestrator({ userInput, inputType: inputType || 'text' })
+    if(!result.success){
+      return res.status(500).json({ error: result.error || 'Orchestrator failed' })
+    }
+    res.json(result)
+  } catch (error){
+    console.error('Orchestrator endpoint error:', error)
+    res.status(500).json({ error: error.message || 'Orchestrator failed' })
   }
 })
 

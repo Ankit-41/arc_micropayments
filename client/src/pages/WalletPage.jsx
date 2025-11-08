@@ -5,8 +5,7 @@ import useAuthStore from '../store/auth.js'
 import useToastStore from '../store/toast.js'
 import RequireAuth from '../components/guards/RequireAuth.jsx'
 import UsageSummary from '../components/common/UsageSummary.jsx'
-import WalletVoiceButton from '../components/common/WalletVoiceButton.jsx'
-import { useSidebar } from '../context/SidebarContext.jsx'
+// WalletVoiceButton is rendered globally in SiteShell
 import { ERC20_ABI } from '../lib/erc20.js'
 
 const USDC = import.meta.env.VITE_USDC_ADDRESS
@@ -317,7 +316,6 @@ export default function WalletPage(){
   const [data, setData] = useState({ summary: null, approvals: [], deposits: [] })
   const [loading, setLoading] = useState(true)
   const toast = useToastStore()
-  const { setSidebarContent } = useSidebar()
 
   const refresh = useCallback(async () => {
     setLoading(true)
@@ -339,6 +337,12 @@ export default function WalletPage(){
         // But wait for user to approve first, this will be handled in WalletContent
       }
     } catch (err){
+      // If 404, user might not exist in DB yet - set empty data
+      if(err.response?.status === 404){
+        console.warn('Wallet summary not found - user may need to be initialized')
+        setData({ summary: null, approvals: [], deposits: [] })
+        return // Don't show error toast for 404
+      }
       console.error(err)
       toast.push('Failed to load wallet summary', 'danger')
     } finally {
@@ -350,21 +354,25 @@ export default function WalletPage(){
     refresh()
   }, [refresh])
 
-  useEffect(() => {
-    setSidebarContent(
-      <WalletVoiceButton data={data} refresh={refresh} />
-    )
-    return () => setSidebarContent(null)
-  }, [data, refresh, setSidebarContent])
+  // Voice button is global; no sidebar injection here
 
   return (
     <RequireAuth>
       <section className="flex flex-col gap-6">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/70 p-6">
-          <h1 className="text-3xl font-semibold text-white">Wallet controls</h1>
-          <p className="mt-2 text-sm text-slate-400">
-            Manage approvals and deposits for Arc testnet USDC. Connect your wallet to sync on-chain activity with account-level allowances.
-          </p>
+        <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-slate-950/90 p-5 backdrop-blur-sm">
+          <div className="flex items-start gap-3">
+            <div className="rounded-lg bg-blue-500/10 p-2">
+              <svg className="h-5 w-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h1 className="text-2xl font-semibold text-white mb-1.5">Wallet controls</h1>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Manage approvals and deposits for Arc testnet USDC. Connect your wallet to sync on-chain activity with account-level allowances.
+              </p>
+            </div>
+          </div>
         </div>
         <WalletContent data={data} refresh={refresh} loading={loading} />
       </section>

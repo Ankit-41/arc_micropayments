@@ -7,7 +7,7 @@ import useUsageSummary from '../hooks/useUsageSummary.js'
 import useInterval from '../hooks/useInterval.js'
 import TermsCard from '../components/common/TermsCard.jsx'
 import NegotiationVisualizer from '../components/common/NegotiationVisualizer.jsx'
-import TipButton from '../components/common/TipButton.jsx'
+// TipButton removed in favor of single wallet voice command
 import { useSidebar } from '../context/SidebarContext.jsx'
 
 const statusCopy = {
@@ -400,7 +400,7 @@ export default function PostPage(){
             Finalize charge
           </button>
         </div>
-        <TipButton postId={post._id} creatorId={post.creatorId} postTitle={post.title} />
+        {/* TipButton removed: handled by wallet voice command */}
         <div className="text-xs text-slate-400">{statusMessage}</div>
         <TermsCard 
           terms={terms} 
@@ -473,7 +473,7 @@ export default function PostPage(){
                 disabled={!reservationId || ['idle', 'negotiating', 'preview', 'finalized'].includes(status)}
                 title="Stop metering and record the debit or refund"
               />
-              <TipButton postId={post._id} creatorId={post.creatorId} postTitle={post.title} />
+              {/* TipButton removed: handled by wallet voice command */}
             </div>
             <div className="mt-4 text-sm text-slate-300">
               {statusMessage}
