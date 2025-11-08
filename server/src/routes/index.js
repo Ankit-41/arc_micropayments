@@ -9,6 +9,7 @@ import userRoutes from './users/user.routes.js'
 import walletRoutes from './wallet/wallet.routes.js'
 import adminRoutes from './admin/admin.routes.js'
 import tipRoutes from './tips/tip.routes.js'
+import orchestratorRoutes from './orchestrator/orchestrator.routes.js'
 
 const router = Router()
 
@@ -22,5 +23,6 @@ router.use('/', negotiationRoutes)
 router.use('/', meterRoutes)
 router.use('/', settlementRoutes)
 router.use('/', tipRoutes)
+router.use('/', orchestratorRoutes)
 
 export default router

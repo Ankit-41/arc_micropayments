@@ -81,8 +81,12 @@ const FinalizedReadSchema = new mongoose.Schema({
   valid: Boolean,
   refundReason: String,
   ts: { type: Date, default: Date.now },
+  settlementBatchId: { type: mongoose.Schema.Types.ObjectId, ref: 'SettlementBatch', default: null },
+  settledAt: { type: Date, default: null },
 })
 FinalizedReadSchema.index({ ts: 1, creatorId: 1 })
+FinalizedReadSchema.index({ settlementBatchId: 1 })
+FinalizedReadSchema.index({ valid: 1, settlementBatchId: 1 })
 
 const LearningSchema = new mongoose.Schema({
   creatorId: mongoose.Schema.Types.ObjectId,
@@ -104,7 +108,8 @@ const NegLogSchema = new mongoose.Schema({
 
 const SettlementBatchSchema = new mongoose.Schema({
   date: String,
-  totals: Object,
+  totals: Object, // Map of creatorId (string) to accumulated amount
+  readsByCreator: Object, // Map of creatorId (string) to array of read records
   txHash: String,
   status: { type: String, enum: ['draft', 'distributed'], default: 'draft' },
   csvUri: String,

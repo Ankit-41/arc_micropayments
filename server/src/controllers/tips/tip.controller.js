@@ -29,7 +29,7 @@ const ERC20_ABI = [
 export async function processTip(req, res){
   const { postId, userInput, inputType, audioData } = req.body
   const userId = req.user.id
-  
+  console.log("userid ", userId);
   if(!postId || !userInput){
     return res.status(400).json({ error: 'postId and userInput required' })
   }
@@ -45,6 +45,7 @@ export async function processTip(req, res){
     if(!creator || !creator.wallet){
       return res.status(404).json({ error: 'Creator wallet not found' })
     }
+    console.log("creator ",creator);
     
     const sender = await User.findById(userId)
     if(!sender || !sender.wallet){
