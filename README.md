@@ -1,5 +1,4 @@
-# Arc Micropayments MVP (Pattern B: User Prepay → Vault)
-
+# Arc Micropayments MVP
 End-to-end MVP: server (Node/Express + Mongo), agents microservice (one-shot negotiation), client (React), and **Foundry** contracts for Arc Testnet.
 
 ## 🌐 Live Deployment
