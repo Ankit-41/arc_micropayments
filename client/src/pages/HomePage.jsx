@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import client from '../api/client.js'
+import RequireAuth from '../components/guards/RequireAuth.jsx'
 
 export default function HomePage(){
   const [posts, setPosts] = useState([])
@@ -26,6 +27,7 @@ export default function HomePage(){
   }, [])
 
   return (
+    <RequireAuth>
     <section className="flex flex-col gap-6">
       <div className="rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900/90 via-slate-900/70 to-slate-950/90 p-5 backdrop-blur-sm">
         <div className="flex items-start gap-3">
@@ -74,5 +76,6 @@ export default function HomePage(){
         </div>
       )}
     </section>
+    </RequireAuth>
   )
 }
