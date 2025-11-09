@@ -397,9 +397,101 @@ The agents service is a microservice that processes natural language inputs (tex
 
 **Voice-Enabled Tipping:**
 - Users can record voice message
-- Transcribed to text
-- Amount and message extracted
+- Transcribed to text using Eleven Labs API
+- Amount and message extracted by Gemini AI
 - Same blockchain flow
+
+#### 4.5.1 Tip Setup & Configuration
+
+**Environment Variables:**
+- `GOOGLE_GEMINI_API_KEY`: Required for tip amount/message extraction
+- `ELEVEN_LABS_API_KEY`: Required for voice transcription
+- `AGENTS_BASE_URL`: URL of the agents service
+- `SERVER_BASE_URL`: URL of the server API
+
+**API Keys Setup:**
+
+1. **Google Gemini API**:
+   - Go to [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Create a new API key
+   - Add to `agents/.env` as `GOOGLE_GEMINI_API_KEY`
+
+2. **Eleven Labs API**:
+   - Go to [Eleven Labs](https://elevenlabs.io/)
+   - Sign up/login
+   - Get your API key from the dashboard
+   - Add to `agents/.env` as `ELEVEN_LABS_API_KEY`
+   - **Note:** Eleven Labs Speech-to-Text API might require a subscription
+
+**Example User Inputs:**
+- Text: "Send 5 USDC", "Tip 2 USDC, great article!", "Send 10 dollars to the creator"
+- Voice: "I'd like to send 3 USDC as a tip for this great post"
+
+**Tip Processing:**
+- Gemini AI extracts amount (defaults to 1.0 USDC if not specified) and optional message
+- If voice input fails to transcribe, system uses default tip amount
+- Tip amount must not exceed available `approvedAllowance`
+
+#### 4.5.2 Tip API Endpoints
+
+**POST `/tip/process`**
+Process tip request with crew agent
+
+Request:
+```json
+{
+  "postId": "post_id_here",
+  "userInput": "Send 5 USDC",
+  "inputType": "text",
+  "audioData": "base64_encoded_audio" // if voice input
+}
+```
+
+Response:
+```json
+{
+  "tipId": "tip_id_here",
+  "amount": 5,
+  "message": "great article",
+  "creatorWallet": "0x...",
+  "senderWallet": "0x...",
+  "usdcAddress": "0x...",
+  "transcribedText": "..." // if voice input
+}
+```
+
+**POST `/tip/confirm`**
+Confirm tip after MetaMask transaction
+
+Request:
+```json
+{
+  "tipId": "tip_id_here",
+  "txHash": "0x...",
+  "chainId": "5042002"
+}
+```
+
+**GET `/tip/history?type=sent` or `?type=received`**
+Get tip history for user
+
+#### 4.5.3 Troubleshooting Tips
+
+**"Failed to transcribe voice input"**
+- Check Eleven Labs API key is valid
+- Verify subscription/credits available
+- Check network connection
+
+**"Tip processing failed"**
+- Check Google Gemini API key
+- Verify agents service is running
+- Check server logs for errors
+
+**MetaMask transaction fails**
+- Verify user has sufficient USDC balance
+- Check USDC contract address is correct
+- Ensure wallet is connected
+- Verify sufficient `approvedAllowance` (may need to approve more USDC)
 
 ### 4.6 Creator Studio
 
@@ -517,6 +609,39 @@ The settlement system aggregates finalized reads and distributes accumulated pay
 - Current vault balance (from blockchain)
 - Recent approvals, deposits, credits, tips
 - Collapsible sections for better UX
+
+#### 5.4.1 Admin User Setup
+
+To create an admin user and access the Admin Dashboard:
+
+**Step 1: Configure Admin Setup Key**
+1. Set `ADMIN_SETUP_KEY` in `server/.env`:
+   ```env
+   ADMIN_SETUP_KEY=your-secure-admin-setup-key-here
+   ```
+2. Restart the server
+
+**Step 2: Create Admin User**
+Make a POST request to `/auth/ensure-admin`:
+
+```bash
+POST http://localhost:4000/auth/ensure-admin
+Content-Type: application/json
+
+{
+  "key": "your-secure-admin-setup-key-here",
+  "email": "admin@example.com",
+  "password": "SecurePassword123!"
+}
+```
+
+**Response:**
+- If user exists: Updates role to 'admin' and password
+- If user doesn't exist: Creates new admin user
+
+**Step 3: Login**
+- Login with the admin credentials
+- Access Admin Dashboard from navigation menu
 
 ---
 
@@ -804,6 +929,26 @@ The settlement system aggregates finalized reads and distributes accumulated pay
 
 ## 10. Deployment & Configuration
 
+### 10.0 Live Deployment
+
+The application is now fully deployed and ready to use:
+
+- **Client Application**: https://arcclient.vercel.app/
+- **Server API**: https://arcserver-dun.vercel.app/
+- **Agents Service**: https://arcagents.vercel.app/
+- **Smart Contract (PayoutVault)**: `0x89741693b8Bf2EEc4cAe2DE2894F0340C5af7165` (Arc Testnet)
+
+**Quick Start:**
+1. Visit https://arcclient.vercel.app/
+2. Connect MetaMask wallet (Arc Testnet - Chain ID: 5042002)
+3. Register/Login and start using the platform
+4. Test all features: wallet operations, reading posts, tipping creators, admin dashboard
+
+**Network Configuration:**
+- **Network**: Arc Testnet
+- **Chain ID**: 5042002
+- **Contract Address**: `0x89741693b8Bf2EEc4cAe2DE2894F0340C5af7165`
+
 ### 10.1 Environment Variables
 
 **Server (`server/.env`):**
@@ -833,6 +978,12 @@ SERVER_BASE_URL=http://localhost:4000
 PORT=8000
 ```
 
+**Server (`server/.env`) - Additional Variables:**
+```
+ADMIN_SETUP_KEY=your-secure-admin-setup-key-here
+```
+- Required for creating admin users via `/auth/ensure-admin` endpoint (see Section 5.4.1)
+
 ### 10.2 Docker Deployment
 ```bash
 docker compose build
@@ -840,6 +991,13 @@ docker compose up
 ```
 
 ### 10.3 Smart Contract Deployment
+
+**Deployed Contract:**
+- **Address**: `0x89741693b8Bf2EEc4cAe2DE2894F0340C5af7165`
+- **Network**: Arc Testnet (Chain ID: 5042002)
+- **Contract**: PayoutVault.sol
+
+**For Local Deployment:**
 ```bash
 cd foundry/hello-arc
 forge build

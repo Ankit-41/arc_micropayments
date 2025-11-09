@@ -1,6 +1,22 @@
 import { ethers } from 'ethers'
-import Vault from '../../../../foundry/hello-arc/out/PayoutVault.sol/PayoutVault.json' assert { type: 'json' }
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import { FinalizedRead, User, WalletApproval, WalletDeposit, Tip } from '../../models/index.js'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+const vaultPath = path.join(__dirname, '../../../../foundry/hello-arc/out/PayoutVault.sol/PayoutVault.json')
+
+let Vault
+try {
+  Vault = JSON.parse(fs.readFileSync(vaultPath, 'utf8'))
+} catch (error) {
+  console.error('Failed to load PayoutVault.json:', error.message)
+  console.error('Expected path:', vaultPath)
+  // Provide a minimal fallback structure if file is missing
+  Vault = { abi: [] }
+}
 
 async function getVaultBalance(){
   const rpc = process.env.RPC_URL
